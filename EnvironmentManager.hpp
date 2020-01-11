@@ -125,19 +125,19 @@ RewardState EnvironmentManager::submitAction(State s, Action a)
 
 	switch(a)
 	{
-		case static_cast<int>(Action::up): 
+		case Action::up: 
 			nextLoc.y++;
 			break;
 
-		case static_cast<int>(Action::down):
+		case Action::down:
 			nextLoc.y--;
 			break;
 
-		case static_cast<int>(Action::left):
+		case Action::left:
 			nextLoc.x--;
 			break;	
 
-		case static_cast<int>(Action::right):
+		case Action::right:
 			nextLoc.x++;
 			break;	
 	}
@@ -193,19 +193,19 @@ double EnvironmentManager::scoreAction(State s, Action a)
 
 	switch(a)
 	{
-		case static_cast<int>(Action::up): 
+		case Action::up: 
 			nextLoc.y++;
 			break;
 
-		case static_cast<int>(Action::down):
+		case Action::down:
 			nextLoc.y--;
 			break;
 
-		case static_cast<int>(Action::left):
+		case Action::left:
 			nextLoc.x--;
 			break;	
 
-		case static_cast<int>(Action::right):
+		case Action::right:
 			nextLoc.x++;
 			break;	
 	}

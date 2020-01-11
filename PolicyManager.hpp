@@ -2,7 +2,7 @@
 
 #pragma once
 
-const double GAMMA = 0.9;
+const double GAMMA = 0.95;
 
 class PolicyManager
 {
@@ -110,10 +110,10 @@ Action PolicyManager::selectAction(State s)
 	// if (map[s.loc.x][s.loc.y].size() == 0), then the only choice is to make a random selection
 	// also, every so often, select a random action
 
-	if ( ( (RlUtil::oneIn100()%20)==0) || this->map[s.loc.x][s.loc.y].empty())
+	if ( ( (RlUtil::oneIn100()%5)==0) || this->map[s.loc.x][s.loc.y].empty())
 	{
 
-		selAct = static_cast<Action>(RlUtil::oneIn100()%4+1);
+		selAct = static_cast<Action>((RlUtil::oneIn100()%4)+1);
 		//std::cout << RlUtil::timestamp() << " PolicyManager::selectAction - selected random Action: " << static_cast<int>(selAct) << std::endl;		
 
 	}

@@ -6,8 +6,18 @@ long iterations=500000L;
 
 long episodeCount=1L;
 
-int main()
+long bestScore=999999999999999L;
+
+bool abortFlag = false;
+
+int main(int argc, char **argv)
 {
+
+	bool verbose = false;
+
+	if (argc == 2)
+		if (strcmp(argv[1], "--verbose") == 0)
+			verbose = true;
 
 	EnvironmentManager em = EnvironmentManager("20123cc2-7c29-49c6-9dc1-88a0bd31e18c");
 
@@ -31,7 +41,8 @@ int main()
 	long epLen;
 
 
-	std::cout << RlUtil::timestamp() << " rltest_cpp - main - episodeCount: " << episodeCount << std::endl;
+	if (verbose)
+		std::cout << RlUtil::timestamp() << " rltest_cpp - main - episodeCount: " << episodeCount << std::endl;
 
 	// this episode continues until we get a terminal state from the environment
 	while (iterations-- > 0)
@@ -40,6 +51,8 @@ int main()
 		Episode ep = Episode(em.environmentId);
 		ep.epochCount = 1;
 		epLen = 0;
+
+		win = false;
 
 		while (!curState.isTerminal)
 		{
@@ -63,20 +76,31 @@ int main()
 			state = rs.nextState;
 			action = a;
 			epLen = ep.mapLen();
+
+			if (epLen > MAX_WIDTH*MAX_WIDTH*50)
+			{
+				abortFlag = true;
+				break;
+			}
 	
 		}
 
 		// we have hit a terminal state for the current episode
 		
+
+	//	std::cout << "Episode map length: " << epLen << std::endl;	
+
+
+
 		if (reward == 10.0)
 		{
 			win = true;
-			std::cout << RlUtil::timestamp() << " rltest_cpp - =======WIN=======WIN=======WIN=======" << std::endl;
-		}
-		else
-			std::cout << RlUtil::timestamp() << " rltest_cpp - =======LOSE======LOSE======LOSE======" << std::endl;
 
-		std::cout << "Episode map length: " << epLen << std::endl;	
+
+			//std::cout << RlUtil::timestamp() << " rltest_cpp - =======WIN=======WIN=======WIN=======" << std::endl;
+		}
+		//else
+			//std::cout << RlUtil::timestamp() << " rltest_cpp - =======LOSE======LOSE======LOSE======" << std::endl;
 
 
 		// need to apply the score across the episode and update the policy map / q functions
@@ -84,28 +108,41 @@ int main()
 
 		int count = 1;
 
-		for (auto iter = (ep.map.end()); iter != ep.map.begin(); --iter)
+		if (!abortFlag)
 		{
-			if (iter != ep.map.end())
+			for (auto iter = (ep.map.end()); iter != ep.map.begin(); --iter)
 			{
+				if (iter != ep.map.end())
+				{
 
-				double discountedRwd = reward * pow(GAMMA, static_cast<double>(count));
+					double discountedRwd = reward * pow(GAMMA, static_cast<double>(count));
 
-				ep.map[(iter->first)].r = discountedRwd;
-				pm.updatePolicy(ep.map[iter->first].s, ep.map[iter->first].a, ep.map[iter->first].r);
+					ep.map[(iter->first)].r = discountedRwd;
+					pm.updatePolicy(ep.map[iter->first].s, ep.map[iter->first].a, ep.map[iter->first].r);
 
-				count++;
+					count++;
 
+				}
 			}
 		}
 
-		std::cout << RlUtil::timestamp() << " rltest_cpp - ******* RESTART ********" << std::endl;
+		abortFlag = false; // reset abort flag
+
+		if (verbose)
+			std::cout << RlUtil::timestamp() << " rltest_cpp - ******* RESTART ********" << std::endl;
 
 		curState = em.getInitialState();
 
 		episodeCount++;
-		std::cout << RlUtil::timestamp() << " rltest_cpp - main - episodeCount: " << episodeCount << std::endl;
 
+		if (verbose)
+			std::cout << RlUtil::timestamp() << " rltest_cpp - main - episodeCount: " << episodeCount << std::endl;
+
+		if (win && (epLen < bestScore))
+		{
+			bestScore = epLen;
+			std::cout << RlUtil::timestamp() << " Episode " << episodeCount << " - best path len: " << bestScore << std::endl;
+		}
 	}
 }
 
