@@ -3,7 +3,7 @@
 #pragma once
 
 // Boost includes
-#include <boost/log/trivial.hpp>
+//#include "boost/log/trivial.hpp"
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/random_device.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
